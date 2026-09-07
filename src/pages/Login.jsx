@@ -7,8 +7,20 @@ function Login() {
  const [email,setEmail]=useState("")
  const [password,setPassword]=useState("")
  const [error,setError]
+
  const loggedIn=async function(){
    setError("")
+   
+   if(!email && !password ){
+    setError("Please Fill email and password For login")
+    return
+   }
+
+   if(!emailRegex.test(email)){
+    setError("Please Give us a valid email")
+    return
+   }
+
    try {
     const response=await fetch(`https://antonpklive.online/v1/api/user/login`,
        {
@@ -25,9 +37,14 @@ function Login() {
      )
     const data=await response.json()
 
-    if(response.ok){
-        setUser(data.data.user)
+    if(!response.ok){
+        setError("Email or Password is Incorrect")
+        return
     }
+
+    setUser(data.data.user)
+
+
    } catch (error) {
     console.log(error,"Error At Login Time")
    }
@@ -51,6 +68,8 @@ function Login() {
         <button
         onClick={loggedIn}
         >Login</button>
+
+        {error && <p>{error}</p>}
     </div>
   )
 }
