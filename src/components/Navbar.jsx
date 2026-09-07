@@ -18,7 +18,6 @@ function Navbar() {
 
   return (
     <nav>
-      {/* Logo */}
       <div>
         <img src="./picture/picture.png" alt="Tweet Logo" />
         <h1>Tweet</h1>
