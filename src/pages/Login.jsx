@@ -6,7 +6,7 @@ function Login() {
  const {setUser}=useAuth()
  const [email,setEmail]=useState("")
  const [password,setPassword]=useState("")
- const [error,setError]
+ const [error,setError]=useState("")
 
  const loggedIn=async function(){
    setError("")
