@@ -1,6 +1,8 @@
 import React from 'react'
 import { useAuth } from '../context/Authcontext'
 import { useState } from 'react'
+import { Link } from "react-router-dom";
+
 
 function Login() {
  const {setUser}=useAuth()
@@ -10,8 +12,9 @@ function Login() {
 
  const loggedIn=async function(){
    setError("")
+   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
    
-   if(!email && !password ){
+   if(!email || !password ){
     setError("Please Fill email and password For login")
     return
    }
@@ -43,6 +46,7 @@ function Login() {
     }
 
     setUser(data.data.user)
+    
 
 
    } catch (error) {
@@ -53,6 +57,7 @@ function Login() {
   return (
     <div>
         <h1>Login</h1>
+        {error && <p>{error}</p>}
         <input
         type="email"
         placeholder="Email"
@@ -69,7 +74,13 @@ function Login() {
         onClick={loggedIn}
         >Login</button>
 
-        {error && <p>{error}</p>}
+        <p>
+            Don't have an Account?
+            <Link to="/signup">
+                Register
+            </Link>
+
+        </p>
     </div>
   )
 }
