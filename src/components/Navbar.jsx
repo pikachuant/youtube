@@ -39,7 +39,6 @@ function Navbar() {
 
       {/* Right Side */}
       <div>
-        <button>Create</button>
         <button>Login / Signup</button>
       </div>
     </nav>

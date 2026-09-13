@@ -27,7 +27,7 @@ function Signup() {
     }
   }
 
-  const handleSubmit=function(){
+  const handleSubmit=async function(){
     if (!fullname || !username || !email || !password || !avatar) {
       setError("User Must Fill All Mandatory Details to Signup")
       return
@@ -56,7 +56,7 @@ function Signup() {
 
       const data=await response.json()
 
-      if(data.ok){
+      if(data.success){
         console.log("registrayion is Complete")
         setUser(data.data)
       }else{
