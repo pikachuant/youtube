@@ -1,6 +1,6 @@
 import React, { Children, createContext, useContext, useEffect, useState } from 'react'
 
-export function Authenticate() {
+export function Authenticate({children}) {
   const Authcontext=createContext()
   const [user,setUser]=useState(null)
   const [loading,setLoading]=useState(true)
@@ -11,7 +11,7 @@ export function Authenticate() {
         const response=await fetch("https://antonpklive.online/v1/api/user/getuser",
           {
             method:"POST",
-            credentials:"true"
+            credentials:"include"
           }
         )
         const data=await response.json()

@@ -13,6 +13,52 @@ function Signup() {
   const [avatar,setAvatar]=useState("")
   const [coverImage,setcoverImage]=useState("")
 
+  const handleAvatarImage=(e)=>{
+    const file=e.target.files[0]
+    if(file){
+      setAvatar(file)
+    }
+  }
+
+  const handleCoverImage=(e)=>{
+    const file=e.target.files[0]
+    if(file){
+      setcoverImage(file)
+    }
+  }
+
+  const handleSubmit=function(){
+    if (!fullname || !username || !email || !password || !avatar) {
+      setError("User Must Fill All Mandatory Details to Signup")
+      return
+    }
+    try {
+      const formData = new FormData()
+
+      formData.append("fullName", fullname)
+      formData.append("username", username)
+      formData.append("email", email)
+      formData.append("password", password)
+      formData.append("avatar", avatar)
+
+      if(coverImage){
+        formData.append("coverImage",coverImage)
+      }
+
+      const response=await fetch(
+        "https://antonpklive.online/v1/api/user/register",
+        {
+          method:"POST",
+          body:formData,
+          credentials:"include"
+        }
+      )
+    } catch (error) {
+      
+    }
+  }
+
+
   return (
     <>
     <h1>Signup</h1>
@@ -47,7 +93,38 @@ function Signup() {
     value={password}
     />
 
+    <label>
+      {avatar?avatar.name:"Choose to Upload Proffile picture"}
+      <input
+      type='file'
+      accept='image/*'
+      onChange={handleAvatarImage}
+      hidden
+    />
+    </label>
     
+
+    <label>
+      {coverImage?coverImage.name:"Choose to Upload Cover picture"}
+      <input
+      type='file'
+      accept='image/*'
+      onChange={handleCoverImage}
+      hidden
+    />
+    </label>
+    
+    <button
+    onClick={handleSubmit}
+    >
+      SignUp
+    </button>
+
+    <p>
+      {error}
+    </p>
+
+
     </>
   )
 }
