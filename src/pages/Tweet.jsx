@@ -4,7 +4,7 @@ function Home() {
     const [tweet,setTweet]=useState([])
     const [error,setError]=useState("")
     useEffect(()=>{
-       const checkVideo=async function() {
+       const checkTweet=async function() {
         try {
             const response=await fetch(
                 "https://antonpklive.online/v1/api/user/user/tweet/all-tweet",
@@ -25,29 +25,14 @@ function Home() {
         }
        }
        
-     checkVideo()
+     checkTweet()
     },[])
   
   return (
     <>
+    {error && <p>{error}</p>}
     <div>
-        {video.map((item)=>(
-            <Link 
-            to={`/watch/${item._id}`}
-            key={item._id}
-            >
-                <img
-                src={item.thumbnail}
-                alt={item.titile}
-                />
-                <span>{item.duration}</span>
-
-                <div>
-                    <h3>{item.titile}</h3>
-                    <p>{item.views ||0}views</p>
-                </div>
-            </Link>
-        ))}
+        {tweet.map()}
     </div>
     </>
   )
