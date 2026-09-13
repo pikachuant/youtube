@@ -53,8 +53,18 @@ function Signup() {
           credentials:"include"
         }
       )
+
+      const data=await response.json()
+
+      if(data.ok){
+        console.log("registrayion is Complete")
+        setUser(data.data)
+      }else{
+        setError(data.message)
+        
+      }
     } catch (error) {
-      
+      setError("Something went wrong")
     }
   }
 
