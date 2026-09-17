@@ -6,17 +6,15 @@ function Sidebar() {
     <div>
 
       <div>
-        <Link to="/">Home</Link>
-        <Link to="/subscriptions">Subscriptions</Link>
-        <Link to="/history">History</Link>
-        <Link to="/your-videos">Your Videos</Link>
-        <Link to="/liked-videos">Liked Videos</Link>
-      </div>
+      <Link to="/youtube">Home</Link>
+      <Link to="/youtube/subscriptions">Subscriptions</Link>
+      <Link to="/youtube/history">History</Link>
+      <Link to="/youtube/your-videos">Your Videos</Link>
+      <Link to="/youtube/liked-videos">Liked Videos</Link>
 
-      <div>
-        <Link to="/">Home</Link>
-        <Link to="/profile">Profile</Link>
-      </div>
+      <Link to="/twitter">Home</Link>
+      <Link to="/twitter/profile">Profile</Link>
+    </div>
 
     </div>
   );
