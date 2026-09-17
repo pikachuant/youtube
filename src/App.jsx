@@ -1,26 +1,24 @@
 import { Routes, Route } from "react-router-dom";
-import Navbar from "./components/Navbar";
-import Sidebar from "./components/Sidebar";
 import Home from "./Pages/Home";
 import Tweet from "./Pages/Tweet";
+import Login from "./Pages/Login";
+import Signup from "./Pages/Signup";
+import Layout from "./Layout/Layout";
 
 function App() {
   return (
-    <>
-    <Navbar />
-    <Sidebar />
     <Routes>
-      <Route
-      path="/youtube"
-      element={<Home />}
-      />
+      <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<Signup />} />
 
-      <Route
-      path="/tweet"
-      element={<Tweet />}
-      />
+      <Route element={<Layout />}>
+      <Route path="/youtube" element={<Home />} />
+
+      
+      <Route path="/tweet" element={<Tweet />} />
+      </Route>
+    
     </Routes>
-    </>
   )
 }
 
