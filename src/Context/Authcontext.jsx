@@ -1,7 +1,9 @@
 import React, { Children, createContext, useContext, useEffect, useState } from 'react'
 
+
+const Authcontext=createContext()
+
 export function Authenticate({children}) {
-  const Authcontext=createContext()
   const [user,setUser]=useState(null)
   const [loading,setLoading]=useState(true)
 

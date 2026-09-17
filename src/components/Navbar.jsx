@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-function Navbar() {
+function Navbar({ sidebarOpen, setopenSidebar }) {
   const [search,setSearch]=useState("")
 
   const searchButton=async function(){
@@ -18,6 +18,9 @@ function Navbar() {
 
   return (
     <nav>
+       <button onClick={() => setopenSidebar(!sidebarOpen)}>
+            ☰
+       </button>
       <div>
         <img src="./picture/picture.png" alt="Tweet Logo" />
         <h1>Tweet</h1>

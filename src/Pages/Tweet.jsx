@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 
-function Home() {
+function Tweet() {
     const [tweet,setTweet]=useState([])
     const [cursor, setCursor] = useState(null);
     const [hasMore, setHasMore] = useState(null);
@@ -158,7 +158,7 @@ function Home() {
                 }
 
                 {
-                    editingTweetId==tweets._id &&(
+                    editingTweetId===tweets._id &&(
                         <div>
                             <textarea
                             value={editingTweetContent}
@@ -190,4 +190,4 @@ function Home() {
   )
 }
 
-export default Home
+export default Tweet

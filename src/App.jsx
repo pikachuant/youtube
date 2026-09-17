@@ -1,11 +1,26 @@
-import { useState } from 'react'
-
+import { Routes, Route } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import Sidebar from "./components/Sidebar";
+import Home from "./Pages/Home";
+import Tweet from "./Pages/Tweet";
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-   <h1>Hello Here we Go</h1>
+    <>
+    <Navbar />
+    <Sidebar />
+    <Routes>
+      <Route
+      path="/youtube"
+      element={<Home />}
+      />
+
+      <Route
+      path="/tweet"
+      element={<Tweet />}
+      />
+    </Routes>
+    </>
   )
 }
 
