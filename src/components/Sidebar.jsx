@@ -1,7 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-function Sidebar() {
+function Sidebar({ sidebarOpen }) {
+  if(!sidebarOpen){
+    return null
+  }
+
   return (
     <div>
 
