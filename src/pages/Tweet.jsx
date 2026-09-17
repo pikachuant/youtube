@@ -143,7 +143,7 @@ function Home() {
      {error && <p>{error}</p>}
      <div>
          {tweet.map((tweets)=>(
-            <div id={tweets._id}>
+            <div key={tweets._id} id={tweets._id}>
                <h3>{tweets.content}</h3>
                 {
                   tweets.isEditable &&(
