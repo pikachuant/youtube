@@ -1,10 +1,14 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import { useAuth } from "../Context/Authcontext";
+
 
 function Navbar({ sidebarOpen, setopenSidebar }) {
+  const { user, loading } = useAuth();
   const [search,setSearch]=useState("")
 
   const searchButton=async function(){
-    if(!serach.trim()){
+    if(!search.trim()){
       return
     }
 
@@ -39,11 +43,18 @@ function Navbar({ sidebarOpen, setopenSidebar }) {
         onClick={}
         >Search</button>
       </div>
-
-      {/* Right Side */}
-      <div>
-        <button>Login / Signup</button>
-      </div>
+      
+      {
+        user?(
+          <div key={user._id}>
+            <img src={user.avatar} alt={user.fullName}/>
+            <p>{user.fullName}</p>
+          </div>
+        ):(
+          <Link to="/login" >Login/Signup</Link>
+        )
+      }
+      
     </nav>
   );
 }
