@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 
 function Home() {
     const [tweet,setTweet]=useState(null)
@@ -7,6 +7,12 @@ function Home() {
     const [error,setError]=useState("")
     const [editingTweetId,setEditingTweetId]=useState("")
     const [editingTweetContent,setEditingTweetContent]=useState("")
+
+
+    const loadMoreRef=useRef(null)
+
+    
+
      
     const fetchTweet=useCallback(async function(){
         if(!hasMore){
@@ -32,8 +38,8 @@ function Home() {
                     return
                 }
     
-                setTweet(...prev,
-                    ...data.data.Editable
+                setTweet([...prev,
+                    ...data.data.Editable]
                 )
     
                 setCursor(data.data.cursor);
@@ -44,6 +50,22 @@ function Home() {
 
         }
     },[hasMore,cursor])
+
+    useEffect(() => {
+        const observer=new IntersectionObserver((entries)=>{
+            if(entries[0].isIntersecting){
+                fetchTweet()
+            }
+        })
+
+        if(loadMoreRef.current){
+            observer.observe(loadMoreRef.current)
+        }
+
+        return ()=>{
+            observer.disconnect()
+        }
+    }, [fetchTweet])
 
     useEffect(()=>{
        const checkTweet=async function() {
