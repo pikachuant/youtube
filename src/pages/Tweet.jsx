@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 
 function Home() {
-    const [tweet,setTweet]=useState(null)
+    const [tweet,setTweet]=useState([])
     const [cursor, setCursor] = useState(null);
     const [hasMore, setHasMore] = useState(null);
     const [error,setError]=useState("")
@@ -38,8 +38,10 @@ function Home() {
                     return
                 }
     
-                setTweet([...prev,
-                    ...data.data.Editable]
+                setTweet(prev=>[
+                    ...prev,
+                    ...data.data.Editable
+                ]
                 )
     
                 setCursor(data.data.cursor);
@@ -114,7 +116,7 @@ function Home() {
             if(data.success){
                 setTweet(prev=>
                     prev.map(t=>{
-                        t._id==editingTweetId?
+                        return t._id==editingTweetId?
                         {
                             ...t,
                             content:data.data.content
@@ -124,7 +126,7 @@ function Home() {
                     })
                 )
                 setEditingTweetId(null);
-                setEditContent("");
+                setEditingTweetContent("");
             }else{
                 setError(data.message)
             }
@@ -161,7 +163,7 @@ function Home() {
                         <div>
                             <textarea
                             value={editingTweetContent}
-                            onChange={(e)=setEditingTweetContent(e.target.value)}
+                            onChange={(e)=>setEditingTweetContent(e.target.value)}
                             />
                             <button
                             onClick={EditTweet}
