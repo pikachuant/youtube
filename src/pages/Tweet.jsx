@@ -7,19 +7,42 @@ function Home() {
     const [error,setError]=useState("")
     const [editingTweetId,setEditingTweetId]=useState("")
     const [editingTweetContent,setEditingTweetContent]=useState("")
-
+    const [loading, setLoading] = useState(false);
 
     const loadMoreRef=useRef(null)
 
-    
-
+    useEffect(()=>{
+       const checkTweet=async function() {
+        try {
+            const response=await fetch(
+                "https://antonpklive.online/v1/api/user/user/tweet/all-tweet",
+                {
+                    method:"GET",
+                    credentials:"include"
+                }
+            )
+            const data=await response.json()
+            if(data.success){
+                setTweet(data.data.Editable)
+                setCursor(data.data.cursor)
+                setHasMore(data.data.hasMore)
+            }else{
+                setError("failed Fetech Tweet Details")
+                return
+            }
+        } catch (error) {
+            setError(error)
+        }
+       }
+       
+     checkTweet()
+    },[])
      
     const fetchTweet=useCallback(async function(){
         if(!hasMore){
             return
         }
-        else{
-            try {
+        try {
                 let url="https://antonpklive.online/v1/api/user/user/tweet/all-tweet"
                 if (cursor){
                     url+=`?cursor=${cursor}`
@@ -48,9 +71,8 @@ function Home() {
                 setHasMore(data.data.hasMore);
             } catch (error) {
                 setError(error.message)
-            }
-
         }
+
     },[hasMore,cursor])
 
     useEffect(() => {
@@ -69,32 +91,6 @@ function Home() {
         }
     }, [fetchTweet])
 
-    useEffect(()=>{
-       const checkTweet=async function() {
-        try {
-            const response=await fetch(
-                "https://antonpklive.online/v1/api/user/user/tweet/all-tweet",
-                {
-                    method:"GET",
-                    credentials:"include"
-                }
-            )
-            const data=await response.json()
-            if(data.success){
-                setTweet(data.data.Editable)
-                setCursor(data.data.cursor)
-                setHasMore(data.data.hasMore)
-            }else{
-                setError("failed Fetech Tweet Details")
-                return
-            }
-        } catch (error) {
-            setError(error)
-        }
-       }
-       
-     checkTweet()
-    },[])
     
     const EditTweet=async function(){
         try {
@@ -172,20 +168,20 @@ function Home() {
                         </div>
                     )
                 }
-
-                {
-                    hasMore &&(
-                        <div ref={loadMoreRef}></div>
-                    )
-                }
-
-                {
-                    !hasMore &&(
-                        <p>No More Tweets</p>
-                    )
-                }
             </div>
          ))}
+
+         {
+            hasMore &&(
+              <div ref={loadMoreRef}></div>
+            )
+          }
+
+          {
+            !hasMore &&(
+              <p>No More Tweets</p>
+            )
+        }
       </div>
     </>
   )
