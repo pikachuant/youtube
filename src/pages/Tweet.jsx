@@ -39,10 +39,11 @@ function Home() {
     },[])
      
     const fetchTweet=useCallback(async function(){
-        if(!hasMore){
+        if(!hasMore || loading){
             return
         }
         try {
+                setLoading(true)
                 let url="https://antonpklive.online/v1/api/user/user/tweet/all-tweet"
                 if (cursor){
                     url+=`?cursor=${cursor}`
@@ -71,9 +72,11 @@ function Home() {
                 setHasMore(data.data.hasMore);
             } catch (error) {
                 setError(error.message)
-        }
+            }finally{
+                setLoading(false)
+            }
 
-    },[hasMore,cursor])
+    },[hasMore,cursor,loading])
 
     useEffect(() => {
         const observer=new IntersectionObserver((entries)=>{
