@@ -98,7 +98,7 @@ function Tweet() {
     const EditTweet=async function(){
         try {
             const response=await fetch(
-                `https://antonpklive.online/v1/api/user/${editingTweetId}/edit-tweet`,
+                `https://antonpklive.online/v1/api/user/tweet/${editingTweetId}/edit-tweet`,
                 {
                     method:'POST',
                     headers:{
@@ -140,14 +140,15 @@ function Tweet() {
 
   return (
     <>
-     {error && <p>{error}</p>}
-     <div>
+     {error && <p className="tweet-error">{error}</p>}
+     <div className="tweet-page">
+         <div className="tweet-list">
          {tweet.map((tweets)=>(
-            <div key={tweets._id} id={tweets._id}>
-               <h3>{tweets.content}</h3>
+            <div className="tweet-card" key={tweets._id} id={tweets._id}>
+               <h3 className="tweet-content">{tweets.content}</h3>
                 {
                   tweets.isEditable &&(
-                       <button onClick={()=>{
+                       <button className="tweet-edit-btn" onClick={()=>{
                           setEditingTweetId(tweets._id)
                           setEditingTweetContent(tweets.content)
                          }
@@ -159,12 +160,14 @@ function Tweet() {
 
                 {
                     editingTweetId===tweets._id &&(
-                        <div>
+                        <div className="tweet-edit-form">
                             <textarea
+                            className="tweet-textarea"
                             value={editingTweetContent}
                             onChange={(e)=>setEditingTweetContent(e.target.value)}
                             />
                             <button
+                            className="tweet-save-btn"
                             onClick={EditTweet}
                             >Save</button>
 
@@ -173,6 +176,7 @@ function Tweet() {
                 }
             </div>
          ))}
+         </div>
 
          {
             hasMore &&(
@@ -182,7 +186,7 @@ function Tweet() {
 
           {
             !hasMore &&(
-              <p>No More Tweets</p>
+              <p className="tweet-no-more">No More Tweets</p>
             )
         }
       </div>

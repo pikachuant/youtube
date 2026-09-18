@@ -1,10 +1,11 @@
 import React from 'react'
-import { useAuth } from '../context/Authcontext'
+import { useAuth } from '../Context/Authcontext.jsx'
 import { useState } from 'react'
-import { Link } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 
 
 function Login() {
+ const navigate=useNavigate()
  const {setUser}=useAuth()
  const [email,setEmail]=useState("")
  const [password,setPassword]=useState("")
@@ -30,7 +31,7 @@ function Login() {
           method:"POST",
           credentials: "include",
           headers:{
-             "content-Type":"application/json"
+             "Content-Type":"application/json"
           },
           body:JSON.stringify({
              email,
@@ -39,11 +40,13 @@ function Login() {
        }
      )
     const data=await response.json()
+    console.log("LOGIN RESPONSE:", data);
 
     if(!response.ok){
         setError("Email or Password is Incorrect")
         return
     }
+    navigate("/youtube");
 
     setUser(data.data.user)
     
@@ -55,32 +58,36 @@ function Login() {
  }
 
   return (
-    <div>
-        <h1>Login</h1>
-        {error && <p>{error}</p>}
+    <div className="auth-page">
+      <div className="auth-card">
+        <h1 className="auth-title">Login</h1>
+        {error && <p className="auth-error">{error}</p>}
         <input
+        className="auth-input"
         type="email"
         placeholder="Email"
         onChange={(e)=>setEmail(e.target.value)}
         value={email}
         />
         <input
+        className="auth-input"
         type='password'
         placeholder='Password'
         onChange={(e)=>setPassword(e.target.value)}
         value={password}
         />
         <button
+        className="auth-btn"
         onClick={loggedIn}
         >Login</button>
 
-        <p>
+        <p className="auth-footer">
             Don't have an Account?
             <Link to="/signup">
                 Register
             </Link>
-
         </p>
+      </div>
     </div>
   )
 }

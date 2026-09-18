@@ -31,22 +31,26 @@ function Home() {
   
   return (
     <>
-    {error && <p>{error}</p>}
-    <div>
+    {error && <p className="home-error">{error}</p>}
+    <div className="video-grid">
         {video.map((item)=>(
             <Link 
+            className="video-card"
             to={`/watch/${item._id}`}
+            state={{ video: item }}
             key={item._id}
             >
-                <img
-                src={item.thumbnail}
-                alt={item.titile}
-                />
-                <span>{item.duration}</span>
+                <div className="video-thumbnail-wrapper">
+                  <img
+                  src={item.thumbnail}
+                  alt={item.titile}
+                  />
+                  <span className="video-duration">{item.duration}</span>
+                </div>
 
-                <div>
+                <div className="video-info">
                     <h3>{item.titile}</h3>
-                    <p>{item.views ||0}views</p>
+                    <p>{item.views ||0} views</p>
                 </div>
             </Link>
         ))}

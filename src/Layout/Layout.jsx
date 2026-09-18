@@ -16,7 +16,7 @@ const[sidebarOpen,setopenSidebar]=useState(true)
     sidebarOpen={sidebarOpen}
     />
 
-    <main>
+    <main className={`layout-main${sidebarOpen ? ' layout-main--with-sidebar' : ''}`}>
         <Outlet />
     </main>
     

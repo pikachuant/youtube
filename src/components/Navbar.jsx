@@ -1,57 +1,60 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { useAuth } from "../Context/Authcontext";
+import { useAuth } from "../Context/Authcontext.jsx";
+import streamtalk from "../picture/streamtalk.png";
+import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 
 function Navbar({ sidebarOpen, setopenSidebar }) {
+  const navigate=useNavigate()
+  const location=useLocation()
   const { user, loading } = useAuth();
   const [search,setSearch]=useState("")
 
-  const searchButton=async function(){
+  const searchButton=function(){
     if(!search.trim()){
       return
     }
-
-    try {
-      const response=await fetch(`https://antonpklive.online/v1/api/user/search/${encodeURIComponent(search)}`)
-      const data=await response.json()
-    } catch (error) {
-      console.log(error,"Error at fecthed into videos")
+    if(location.pathname=='/tweet'){
+      navigate(`/tweet/search?q=${encodeURIComponent(search.trim())}`)
+    }
+    if(location.pathname=="/youtube"){
+      navigate(`/youtube/search?q=${encodeURIComponent(search.trim())}`)
     }
   }
 
   return (
-    <nav>
-       <button onClick={() => setopenSidebar(!sidebarOpen)}>
+    <nav className="navbar">
+       <button className="navbar-hamburger" onClick={() => setopenSidebar(!sidebarOpen)}>
             ☰
        </button>
-      <div>
-        <img src="./picture/picture.png" alt="Tweet Logo" />
-        <h1>Tweet</h1>
+      <div className="navbar-brand">
+        <img src={streamtalk} alt="Tweet Logo" />
       </div>
 
       {/* Search */}
-      <div>
+      <div className="navbar-search">
         <input
           type="text"
           placeholder="Search..."
-          value={serach}
+          value={search}
           onChange={(e)=>setSearch(e.target.value)}
         />
 
         <button
-        onClick={}
+        onClick={searchButton}
         >Search</button>
       </div>
       
       {
         user?(
-          <div key={user._id}>
+          <div className="navbar-user" key={user._id}>
             <img src={user.avatar} alt={user.fullName}/>
             <p>{user.fullName}</p>
           </div>
         ):(
-          <Link to="/login" >Login/Signup</Link>
+          <Link className="navbar-login-link" to="/login" >Login/Signup</Link>
         )
       }
       

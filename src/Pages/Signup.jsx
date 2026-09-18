@@ -1,8 +1,10 @@
 import React from 'react'
 import { useState } from 'react'
-import { useAuth } from "../context/Authcontext";
+import { useAuth } from "../Context/Authcontext.jsx";
+import { useNavigate } from 'react-router-dom';
 
 function Signup() {
+  const navigate=useNavigate()
   const {setUser}=useAuth()
   const [fullname,setFullname]=useState("")
   const [username,setUsername]=useState("")
@@ -58,7 +60,8 @@ function Signup() {
 
       if(data.success){
         console.log("registrayion is Complete")
-        setUser(data.data)
+        setUser(data.data.user)
+        navigate('/youtube')
       }else{
         setError(data.message)
         
@@ -70,9 +73,11 @@ function Signup() {
 
 
   return (
-    <>
-    <h1>Signup</h1>
+    <div className="auth-page">
+    <div className="auth-card">
+    <h1 className="auth-title">Signup</h1>
     <input
+    className="auth-input"
     type='text'
     placeholder='Full Name'
     required={true}
@@ -81,6 +86,7 @@ function Signup() {
     />
 
     <input
+    className="auth-input"
     type='text'
     placeholder='Username'
     required={true}
@@ -89,6 +95,7 @@ function Signup() {
     />
 
     <input
+    className="auth-input"
     type='email'
     placeholder='Email'
     required={true}
@@ -96,6 +103,7 @@ function Signup() {
     value={email}
     />
     <input
+    className="auth-input"
     type='password'
     placeholder='Password'
     required={true}
@@ -103,8 +111,8 @@ function Signup() {
     value={password}
     />
 
-    <label>
-      {avatar?avatar.name:"Choose to Upload Proffile picture"}
+    <label className={`auth-file-label${avatar ? ' has-file' : ''}`}>
+      {avatar?avatar.name:"📷 Choose Profile Picture"}
       <input
       type='file'
       accept='image/*'
@@ -114,8 +122,8 @@ function Signup() {
     </label>
     
 
-    <label>
-      {coverImage?coverImage.name:"Choose to Upload Cover picture"}
+    <label className={`auth-file-label${coverImage ? ' has-file' : ''}`}>
+      {coverImage?coverImage.name:"🖼️ Choose Cover Image (optional)"}
       <input
       type='file'
       accept='image/*'
@@ -125,17 +133,18 @@ function Signup() {
     </label>
     
     <button
+    className="auth-btn"
     onClick={handleSubmit}
     >
       SignUp
     </button>
 
-    <p>
+    {error && <p className="auth-error">
       {error}
-    </p>
+    </p>}
 
-
-    </>
+    </div>
+    </div>
   )
 }
 

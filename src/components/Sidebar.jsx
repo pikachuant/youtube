@@ -7,18 +7,20 @@ function Sidebar({ sidebarOpen }) {
   }
 
   return (
-    <div>
+    <div className="sidebar">
 
-      <div>
-      <Link to="/youtube">Home</Link>
-      <Link to="/youtube/subscriptions">Subscriptions</Link>
-      <Link to="/youtube/history">History</Link>
-      <Link to="/youtube/your-videos">Your Videos</Link>
-      <Link to="/youtube/liked-videos">Liked Videos</Link>
+      <div className="sidebar-section">
+      <Link className="sidebar-link" to="/youtube">Home</Link>
+      <Link className="sidebar-link" to="/youtube/subscriptions">Subscriptions</Link>
+      <Link className="sidebar-link" to="/youtube/history">History</Link>
+      <Link className="sidebar-link" to="/youtube/your-videos">Your Videos</Link>
+      <Link className="sidebar-link" to="/youtube/liked-videos">Liked Videos</Link>
+      </div>
 
-      <Link to="/twitter">Home</Link>
-      <Link to="/twitter/profile">Profile</Link>
-    </div>
+      <div className="sidebar-section">
+      <Link className="sidebar-link" to="/tweet">Home</Link>
+      <Link className="sidebar-link" to="/twitter/profile">Profile</Link>
+      </div>
 
     </div>
   );

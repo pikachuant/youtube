@@ -1,0 +1,165 @@
+import React, { useEffect, useState } from 'react'
+import { useLocation, useParams } from 'react-router-dom'
+
+
+function Player() {
+    const [comment,setComment]=useState("")
+    const[showcomment,setShowComment]=useState([])
+    const [error,setError]=useState()
+    const location=useLocation()
+    const { videoId } = useParams();
+    const video=location.state?.video
+    const [editCommentId,setEditCommentId]=useState("")
+    const [editComment,setEditComment]=useState("")
+
+    
+
+
+    const doComment=async function(){
+        if (!comment.trim()) {
+            return
+        }
+        try {
+            const response=await fetch(`https://antonpklive.online/v1/api/user/user/comment`,
+                {
+                    method:"POST",
+                    credentials:'include',
+                    headers:{
+                        "Content-Type":"application/json"
+                    },
+                    body:JSON.stringify({
+                        comment:comment.trim(),
+                        targetId:video._id,
+                        targetType:"Video"
+                    })
+                }
+            )
+            const data=await response.json()
+            if(!data.success){
+                setError(data.message)
+                return
+            }
+            setComment("")
+        } catch (error) {
+            setError(error)
+        }
+    }
+
+   useEffect(()=>{
+     const fetchComment=async function(){
+        try {
+            const response=await fetch(`https://antonpklive.online/v1/api/user/user/video/comment/${video._id}?sort=latest`,
+                {
+                    method:"GET",
+                    credentials:"include"
+                }
+            )
+            const data=await response.json()
+    
+            if(!data.success){
+                setError(data.message)
+                return
+            }
+            setShowComment(data.data.comments)
+        } catch (error) {
+            setError(error)
+        }
+
+    }
+    fetchComment()
+   },[video?._id])
+
+   
+
+   
+   const saveEditComment=async function() {
+    
+   }
+   
+  
+  return (
+    <>
+    <div className="player">
+        <video
+        src={video?.videoFile}
+        poster={video?.thumbnail}
+        />
+
+        <div className='player-control'>
+            <button>▶</button>
+            <button>🔊</button>
+
+            <span>
+              0:00 / 0:00
+            </span>
+        </div>
+
+        <div className="controls-right">
+            <button>⚙</button>
+            <button>⛶</button>
+        </div>
+    </div>
+
+    <div className='video-info'>
+        <h1>{video?.titile}</h1>
+        <p>
+          {video?.views || 0} views
+        </p>
+        <p>
+          {video?.description}
+        </p>
+    </div>
+
+    <div className='do-comment'>
+        <input
+        type='string'
+        placeholder="Enter Your Comment To Post"
+        value={comment}
+        onChange={(e)=>setComment(e.target.value)}
+        />
+        <button onClick={doComment}>Send</button>
+    </div>
+
+    <div className="show-comment">
+    {showcomment.map((comment) => (
+        <React.Fragment key={comment._id}>
+
+            <div>
+                <p>{comment.comment}</p>
+
+                {comment.isEditable && (
+                    <button
+                        onClick={() => {
+                            setEditCommentId(comment._id);
+                            setEditComment(comment.comment);
+                        }}
+                    >
+                        Edit
+                    </button>
+                )}
+            </div>
+
+            {editCommentId === comment._id && (
+                <div>
+                    <textarea
+                        value={editComment}
+                        onChange={(e) => setEditComment(e.target.value)}
+                    />
+
+                    <button onClick={saveEditComment}>
+                        Save
+                    </button>
+                </div>
+            )}
+
+        </React.Fragment>
+      ))}
+    </div>
+
+    
+    
+    </>
+  )
+}
+
+export default Player
