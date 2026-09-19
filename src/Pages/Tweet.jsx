@@ -31,7 +31,7 @@ function Tweet() {
                 return
             }
         } catch (error) {
-            setError(error)
+            setError(error.message)
         }
        }
        

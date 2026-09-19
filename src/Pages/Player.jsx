@@ -1,24 +1,42 @@
 import React, { useEffect, useState } from 'react'
+import { useRef } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 
 
 function Player() {
+    const[video,setVideo]=useState({})
     const [comment,setComment]=useState("")
     const [showcomment,setShowComment]=useState([])
     const [error,setError]=useState()
     const location=useLocation()
-    const video=location.state?.video
-
+    const videodata=location.state?.video
+    
     const [editCommentId,setEditCommentId]=useState("")
     const [editComment,setEditComment]=useState("")
+    const [originalComment, setOriginalComment] = useState("");
 
     const [likes,setLikes]=useState({})
     const [isliked,setIsLiked]=useState()
 
+    const videoRef = useRef(null);
+    const [isplaying,setisPlaying]=useState(true)
+
+    const[ismute,setIsMute]=useState(true)
+    const [volume, setVolume] = useState(0.4);
+
+    const [duration,setDuration]=useState(null)
+    const[onTimeChage,setOnTimeChange]=useState(null)
+
+    const viewCountedRef=useRef(false)
+
     
+   useEffect(()=>{
+    if(videodata){
+        setVideo(videodata)
+    }
+   },[videodata])
 
-
-    const doComment=async function(){
+   const doComment=async function(){
         if (!comment.trim()) {
             return
         }
@@ -52,7 +70,7 @@ function Player() {
             ])
             setComment("")
         } catch (error) {
-            setError(error)
+            setError(error.message)
         }
     }
 
@@ -73,7 +91,7 @@ function Player() {
             }
             setShowComment(data.data.comments)
         } catch (error) {
-            setError(error)
+            setError(error.message)
         }
 
     }
@@ -112,6 +130,11 @@ function Player() {
    const saveEditComment=async function() {
     try {
         if(!editComment.trim()){
+            setEditCommentId("")
+            return
+        }
+        if(editComment.trim()===originalComment){
+            setEditCommentId("")
             return
         }
         const response=await fetch(`https://antonpklive.online/v1/api/user/user/comment/update`,
@@ -130,7 +153,7 @@ function Player() {
         )
         const data=await response.json()
         if(!data.success){
-            setError(error)
+            setError(data.message)
             return
         }
         setShowComment(prev=>
@@ -147,7 +170,7 @@ function Player() {
 
 
     } catch (error) {
-        setError(error)
+        setError(error.message)
     }
    }
 
@@ -201,6 +224,12 @@ function Player() {
                 setError(data.message)
             }
             setIsLiked(false)
+            setLikes(prev=>(
+            {
+                ...prev,
+                totalLikes: prev.totalLikes - 1
+            }
+        ))
         } catch (error) {
             setError(error.message)
         }
@@ -225,9 +254,80 @@ function Player() {
         setError(data.message)
         }
         setIsLiked(true)
+        setLikes(prev=>(
+            {
+                ...prev,
+                totalLikes: prev.totalLikes + 1
+            }
+        ))
     } catch (error) {
         setError(error.message)
     }
+  }
+
+  const togglePlay=function(){
+    if(videoRef.current.paused){
+        videoRef.current.play()
+        setisPlaying(true)
+    }else{
+        videoRef.current.pause()
+        setisPlaying(false)
+    }
+  }
+  
+  const toggleFullscreen=async function(){
+    const video=videoRef.current
+    
+    if(!document.fullscreenElement){
+        await video.requestFullscreen()
+    }else{
+        await document.exitFullscreen()
+    }
+  }
+
+  const muteControl=async function(){
+    const video=videoRef.current
+    video.muted=!video.muted
+    setIsMute(video.muted);
+  }
+
+  const formatTIme=function(time){
+    if(!Number.isFinite(time)) return "0:00"
+
+    const minute=Math.floor(time/60)
+    const second=Math.floor(time%60)
+
+    return `${minute}:${second.toString().padStart(2, "0")}`;
+  }
+  
+  const addView=async function() {
+    try {
+        const response=await fetch(`https://antonpklive.online/v1/api/user/addviews`,
+            {
+                method:"POST",
+                headers:{
+                    "Content-Type":"application/json"
+                },
+                body:JSON.stringify({
+                    _id:video._id
+                })
+                
+            }
+        )
+        const data=await response.json()
+        if(!data.success){
+            console.log(data.message)
+            return
+        }
+        setVideo(prev=>({
+            ...prev,
+            views:prev.views+1
+        }))
+
+    } catch (error) {
+        console.log(error.message)
+    }
+
   }
 
 
@@ -236,22 +336,70 @@ function Player() {
     <>
     <div className="player">
         <video
+        ref={videoRef}
         src={video?.videoFile}
         poster={video?.thumbnail}
+        autoPlay
+        muted
+        onPlay={() => setisPlaying(true)}
+        onPause={() => setisPlaying(false)}
+        controlsList="nodownload"
+
+        onLoadedMetadata={()=>{
+            setDuration(videoRef.current.duration)
+        }}
+
+        onTimeUpdate={()=>{
+            const currentTime=videoRef.current.currentTime
+            setOnTimeChange(currentTime)
+
+            if(currentTime>=10 && !viewCountedRef.current){
+                viewCountedRef.current = true;
+                addView()
+            }
+        }}
         />
 
         <div className='player-control'>
-            <button>▶</button>
-            <button>🔊</button>
+            <button onClick={togglePlay}>
+              {isplaying ? "⏸" : "▶"}
+            </button>
 
             <span>
-              0:00 / 0:00
+              {formatTIme(onTimeChage)} / {formatTIme(duration)}
             </span>
+
+            <button
+            onClick={muteControl}
+            >{
+                ismute?(
+                    <p>"🔇"</p>
+                ):(<p>"🔊"</p>)
+            }</button>
+
+            <input
+            type='range'
+            min="0"
+            max="1"
+            step="0.025"
+            value={ismute?0:volume}
+            onChange={(e)=>{
+                const newVolume=Number(e.target.value)
+                setVolume(newVolume)
+                setIsMute(newVolume === 0);
+
+                videoRef.current.volume=newVolume
+                videoRef.current.muted=newVolume===0
+            }}
+            />
         </div>
 
         <div className="controls-right">
             <button>⚙</button>
-            <button>⛶</button>
+
+            <button
+            onClick={toggleFullscreen}
+            >⛶</button>
         </div>
     </div>
 
@@ -311,6 +459,7 @@ function Player() {
                         onClick={() => {
                             setEditCommentId(comment._id);
                             setEditComment(comment.comment);
+                            setOriginalComment(comment.comment)
                         }}
                     >
                         Edit

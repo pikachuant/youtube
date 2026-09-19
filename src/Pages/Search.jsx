@@ -36,7 +36,7 @@ function Search() {
                 setYoutube(data.data)
             }
         } catch (error) {
-            console.log(error)
+            console.log(error.message)
         }
     }
     fecthData()

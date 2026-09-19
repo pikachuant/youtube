@@ -22,7 +22,7 @@ function Home() {
                 return
             }
         } catch (error) {
-            setError(error)
+            setError(error.message)
         }
        }
 
