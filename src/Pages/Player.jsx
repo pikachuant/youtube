@@ -9,8 +9,11 @@ function Player() {
     const location=useLocation()
     const { videoId } = useParams();
     const video=location.state?.video
+
     const [editCommentId,setEditCommentId]=useState("")
     const [editComment,setEditComment]=useState("")
+
+    
 
 
     const doComment=async function(){
@@ -37,6 +40,14 @@ function Player() {
                 setError(data.message)
                 return
             }
+            const newData={
+                ...data.data,
+                isEditable: true
+            }
+            setShowComment(prev=>[
+                newData,
+                ...prev
+            ])
             setComment("")
         } catch (error) {
             setError(error)
@@ -67,13 +78,78 @@ function Player() {
     fetchComment()
    },[video?._id])
 
-   
 
-   
    const saveEditComment=async function() {
-    
+    try {
+        if(!editComment.trim()){
+            return
+        }
+        const response=await fetch(`https://antonpklive.online/v1/api/user/user/comment/update`,
+            {
+                method:"POST",
+                headers:{
+                    "Content-Type":"application/json"
+                },
+                credentials:"include",
+                body:JSON.stringify(
+                    {id:editCommentId,
+                    comment:editComment.trim()}
+                )
+                
+            }
+        )
+        const data=await response.json()
+        if(!data.success){
+            setError(error)
+            return
+        }
+        setShowComment(prev=>
+            prev.map(comment=>(
+                comment._id===editCommentId?{
+                    ...comment,
+                    comment:editComment.trim()
+                }:comment
+            ))
+        )
+        setEditCommentId("")
+        setEditComment("")
+        
+
+
+    } catch (error) {
+        setError(error)
+    }
    }
-   
+
+   const deleteComment=async function(deleteCommentId){
+    try {
+        const response=await fetch(`https://antonpklive.online/v1/api/user/user/comment/deletecomment`,
+            {
+                method:"DELETE",
+                headers:{
+                    "Content-Type":"application/json"
+                },
+                credentials:"include",
+                body:JSON.stringify({
+                    commentId:deleteCommentId
+                })
+    
+            }
+        )
+        const data=await response.json()
+        if(!data.success){
+            setError(data.message)
+            return
+        }
+        setShowComment(prev=>
+            prev.filter(comment=>comment._id!==deleteCommentId)
+        )
+    } catch (error) {
+        setError(error.message)
+    }
+
+   }
+
   
   return (
     <>
@@ -138,7 +214,7 @@ function Player() {
 
                     <button
                         onClick={()=>{
-                            setEditCommentId(comment._id);
+                            deleteComment(comment._id);
                         }}
                     >
                         Delete
