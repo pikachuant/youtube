@@ -4,15 +4,13 @@ import { useLocation, useParams } from 'react-router-dom'
 
 function Player() {
     const [comment,setComment]=useState("")
-    const[showcomment,setShowComment]=useState([])
+    const [showcomment,setShowComment]=useState([])
     const [error,setError]=useState()
     const location=useLocation()
     const { videoId } = useParams();
     const video=location.state?.video
     const [editCommentId,setEditCommentId]=useState("")
     const [editComment,setEditComment]=useState("")
-
-    
 
 
     const doComment=async function(){
@@ -128,6 +126,7 @@ function Player() {
                 <p>{comment.comment}</p>
 
                 {comment.isEditable && (
+                    <>
                     <button
                         onClick={() => {
                             setEditCommentId(comment._id);
@@ -136,6 +135,15 @@ function Player() {
                     >
                         Edit
                     </button>
+
+                    <button
+                        onClick={()=>{
+                            setEditCommentId(comment._id);
+                        }}
+                    >
+                        Delete
+                    </button>
+                    </>
                 )}
             </div>
 
