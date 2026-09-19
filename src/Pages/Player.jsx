@@ -7,11 +7,13 @@ function Player() {
     const [showcomment,setShowComment]=useState([])
     const [error,setError]=useState()
     const location=useLocation()
-    const { videoId } = useParams();
     const video=location.state?.video
 
     const [editCommentId,setEditCommentId]=useState("")
     const [editComment,setEditComment]=useState("")
+
+    const [likes,setLikes]=useState({})
+    const [isliked,setIsLiked]=useState()
 
     
 
@@ -75,6 +77,34 @@ function Player() {
         }
 
     }
+
+    const fecthLikes=async function(){
+        try {
+            const response=await fetch(`https://antonpklive.online/v1/api/user/user/video/${video._id}/get-alllikes`,
+                {
+                    method:"POST",
+                    credentials:"include",
+                    headers:{
+                        "Content-Type":"application/json"
+                    },
+                    body:JSON.stringify({
+                        targetType:"Video"
+                    })
+                }
+            )
+            const data=await response.json()
+            if(!data.success){
+                setError(data.message)
+            }
+            setLikes(data.data)
+            if(data.data.isliked==1){
+                setIsLiked(true)
+            }
+        } catch (error) {
+            setError(error.message)
+        }
+    }
+    fecthLikes()
     fetchComment()
    },[video?._id])
 
@@ -150,6 +180,57 @@ function Player() {
 
    }
 
+   const likesControl=async function(){
+    if(isliked){
+        try {
+            const response=await fetch(`https://antonpklive.online/v1/api/user/user/unlike`,
+                {
+                    method:"DELETE",
+                    credentials:"include",
+                    headers:{
+                        "Content-Type":"application/json"
+                    },
+                    body:JSON.stringify({
+                        id:video._id,
+                        targetType:"Video"
+                    })
+                }
+            )
+            const data=await response.json()
+            if(!data.success){
+                setError(data.message)
+            }
+            setIsLiked(false)
+        } catch (error) {
+            setError(error.message)
+        }
+        return
+
+    }
+    try {
+        const response=await fetch(`https://antonpklive.online/v1/api/user/user/like`,
+            {
+                method:"POST",
+                credentials:"include",
+                headers:{
+                   "Content-Type":"application/json"
+                },
+                body:JSON.stringify({
+                id:video._id,
+                targetType:"Video"
+            })
+        })
+        const data=await response.json()
+        if(!data.success){
+        setError(data.message)
+        }
+        setIsLiked(true)
+    } catch (error) {
+        setError(error.message)
+    }
+  }
+
+
   
   return (
     <>
@@ -180,6 +261,24 @@ function Player() {
           {video?.views || 0} views
         </p>
         <p>
+          {likes?.totalLikes || 0} Likes
+        </p>
+        {
+            isliked?(
+                <button
+                onClick={likesControl}
+                >
+                    Liked
+                </button>
+            ):(
+                <button
+                onClick={likesControl}
+                >
+                    Not-Liked
+                </button>
+            )
+        }
+        <p>
           {video?.description}
         </p>
     </div>
@@ -195,6 +294,11 @@ function Player() {
     </div>
 
     <div className="show-comment">
+    {error && (
+    <p className="text-red-500">
+        {error}
+    </p>
+)}
     {showcomment.map((comment) => (
         <React.Fragment key={comment._id}>
 
