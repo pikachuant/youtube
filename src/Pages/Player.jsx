@@ -4,7 +4,7 @@ import { useLocation, useParams } from 'react-router-dom'
 
 
 function Player() {
-    const[video,setVideo]=useState({})
+    
     const [comment,setComment]=useState("")
     const [showcomment,setShowComment]=useState([])
     const [error,setError]=useState()
@@ -29,12 +29,13 @@ function Player() {
 
     const viewCountedRef=useRef(false)
 
+    const[video,setVideo]=useState(videodata)
+
+
     
-   useEffect(()=>{
-    if(videodata){
-        setVideo(videodata)
-    }
-   },[videodata])
+
+   
+
 
    const doComment=async function(){
         if (!comment.trim()) {
