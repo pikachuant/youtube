@@ -6,7 +6,11 @@ import { useLocation, useParams } from 'react-router-dom'
 function Player() {
     
     const [comment,setComment]=useState("")
-    const [showcomment,setShowComment]=useState([])
+    const [showcomment, setShowComment] = useState({
+      comments: [],
+      hasMore: false,
+      nextCursor: null
+    })
     const [error,setError]=useState()
     const location=useLocation()
     const videodata=location.state?.video
@@ -30,8 +34,6 @@ function Player() {
     const viewCountedRef=useRef(false)
 
     const[video,setVideo]=useState(videodata)
-
-
     
 
    
@@ -65,10 +67,14 @@ function Player() {
                 ...data.data,
                 isEditable: true
             }
-            setShowComment(prev=>[
-                newData,
-                ...prev
-            ])
+            setShowComment(prev=>({
+                ...prev,
+                comments:[
+                    newData,
+                    ...prev.comments,
+                    
+                ]
+            }))
             setComment("")
         } catch (error) {
             setError(error.message)
@@ -90,12 +96,15 @@ function Player() {
                 setError(data.message)
                 return
             }
-            setShowComment(data.data.comments)
+            setShowComment(data.data)
+            
         } catch (error) {
             setError(error.message)
         }
 
-    }
+        
+
+    } 
 
     const fecthLikes=async function(){
         try {
@@ -157,14 +166,18 @@ function Player() {
             setError(data.message)
             return
         }
-        setShowComment(prev=>
-            prev.map(comment=>(
-                comment._id===editCommentId?{
+
+        setShowComment(prev=>({
+            ...prev,
+            comments:prev.comments.map(comment=>
+                comment._id==data.data._id
+                ?{
                     ...comment,
-                    comment:editComment.trim()
-                }:comment
-            ))
-        )
+                    comment:data.data.comment
+                }
+                :comment
+            )
+        }))
         setEditCommentId("")
         setEditComment("")
         
@@ -195,9 +208,10 @@ function Player() {
             setError(data.message)
             return
         }
-        setShowComment(prev=>
-            prev.filter(comment=>comment._id!==deleteCommentId)
-        )
+        setShowComment(prev=>({
+            ...prev,
+            comments:prev.comments.filter(comment=>comment._id!==deleteCommentId)
+        }))
     } catch (error) {
         setError(error.message)
     }
@@ -320,10 +334,7 @@ function Player() {
             console.log(data.message)
             return
         }
-        setVideo(prev=>({
-            ...prev,
-            views:prev.views+1
-        }))
+
 
     } catch (error) {
         console.log(error.message)
@@ -448,7 +459,7 @@ function Player() {
         {error}
     </p>
 )}
-    {showcomment.map((comment) => (
+    {showcomment.comments.map((comment) => (
         <React.Fragment key={comment._id}>
 
             <div>
