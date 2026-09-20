@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useRef } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 
@@ -19,6 +19,10 @@ function Player() {
     const [editComment,setEditComment]=useState("")
     const [originalComment, setOriginalComment] = useState("");
 
+    const [hasMore,setHasMore]=useState(null)
+    const [cursor,setCursor]=useState(null)
+    const [loading,setLoading]=useState(false)
+
     const [likes,setLikes]=useState({})
     const [isliked,setIsLiked]=useState()
 
@@ -34,6 +38,8 @@ function Player() {
     const viewCountedRef=useRef(false)
 
     const[video,setVideo]=useState(videodata)
+
+    const loadmoreRef=useRef(null)
     
 
    
@@ -96,7 +102,9 @@ function Player() {
                 setError(data.message)
                 return
             }
+            setHasMore(data.data.hasMore)
             setShowComment(data.data)
+            setCursor(data.data.nextCursor)
             
         } catch (error) {
             setError(error.message)
@@ -342,6 +350,61 @@ function Player() {
 
   }
 
+  const loadMoreComment=useCallback(async function(){
+    if(!hasMore || loading){
+        return
+    }else{
+        try {
+            console.log("called");
+            setLoading(true)
+            const response=await fetch(`https://antonpklive.online/v1/api/user/user/video/comment/${video._id}?cursor=${cursor}`,
+                {
+                    method:"GET",
+                    credentials:"include"
+                }
+            )
+            const data=await response.json()
+            console.log(data)
+    
+            if(!data.success){
+                setError(data.message)
+                return
+            }
+            setShowComment(prev=>({
+                ...prev,
+                ...data.data,
+                comments:[
+                    ...prev.comments,
+                    ...data.data.comments
+                ]
+            }))
+            setHasMore(data.data.hasMore)
+            setCursor(data.data.nextCursor)
+            setError(false)
+        } catch (error) {
+            setError(error.message)
+        }finally{
+            setLoading(false)
+        }
+    }
+  },[hasMore, loading, cursor, video._id])
+
+  useEffect(()=>{
+    const observer=new IntersectionObserver((entries)=>{
+        if(entries[0].isIntersecting){
+            loadMoreComment()
+        }
+    })
+
+    if(loadmoreRef.current){
+        observer.observe(loadmoreRef.current)
+    }
+
+    return ()=>{
+        observer.disconnect()
+    }
+  },[loadMoreComment])
+
 
   
   return (
@@ -503,6 +566,17 @@ function Player() {
 
         </React.Fragment>
       ))}
+
+      {
+        hasMore&&(<div ref={loadmoreRef}></div>)
+      }
+      {
+        !hasMore&&(<div>No More Comments</div>)
+      }
+
+
+
+
     </div>
 
     
