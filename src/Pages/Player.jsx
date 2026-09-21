@@ -29,8 +29,12 @@ function Player() {
     const videoRef = useRef(null);
     const [isplaying,setisPlaying]=useState(true)
 
-    const[ismute,setIsMute]=useState(true)
+    const [ismute,setIsMute]=useState(true)
     const [volume, setVolume] = useState(0.4);
+    const [showSetting,setShowSetting]=useState(false)
+    const [showSpeed,setShowSpeed]=useState(false)
+    const [playBackSpeed,setPlayBackSpeed]=useState(1)
+
 
     const [duration,setDuration]=useState(null)
     const[onTimeChage,setOnTimeChange]=useState(null)
@@ -405,6 +409,12 @@ function Player() {
     }
   },[loadMoreComment])
 
+  const changeSpeed=function(speed){
+    videoRef.current.playbackRate = speed;
+    setPlayBackSpeed(speed)
+    setShowSpeed(false);
+  }
+
 
   
   return (
@@ -470,7 +480,61 @@ function Player() {
         </div>
 
         <div className="controls-right">
-            <button>⚙</button>
+            <div className='setting-icon'>
+            <button
+            onClick={()=>setShowSetting(prev=>!prev)}
+            >⚙</button>
+            {
+                showSetting&&(
+                   <button
+                   onClick={()=>setShowSpeed(prev=>!prev)}
+                   >
+                    Playback Speed
+                    <span>{playBackSpeed}x</span>
+                   </button>
+                )
+            }
+            {
+                showSpeed&&(
+                    <div className='showspeed-btn'>
+                        <button
+                        onClick={()=>{
+                            changeSpeed(0.5)
+                        }}>
+                            0.5x
+                        </button>
+
+                        <button
+                        onClick={()=>{
+                            changeSpeed(1)
+                        }}>
+                            Normal
+                        </button>
+
+                        <button
+                        onClick={()=>{
+                            changeSpeed(1.5)
+                        }}>
+                            1.5x
+                        </button>
+
+                        <button
+                        onClick={()=>{
+                            changeSpeed(2)
+                        }}>
+                            2x
+                        </button>
+
+                        <button
+                        onClick={()=>{
+                            changeSpeed(2.5)
+                        }}>
+                            2.5x
+                        </button>
+                    </div>
+                )
+            }
+            </div>
 
             <button
             onClick={toggleFullscreen}
