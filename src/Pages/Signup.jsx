@@ -1,9 +1,10 @@
 import React from 'react'
 import { useState } from 'react'
 import { useAuth } from "../Context/Authcontext.jsx";
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 function Signup() {
+  const location=useLocation()
   const navigate=useNavigate()
   const {setUser}=useAuth()
   const [fullname,setFullname]=useState("")
@@ -15,6 +16,8 @@ function Signup() {
   const [avatar,setAvatar]=useState("")
   const [coverImage,setcoverImage]=useState("")
 
+
+  const from=location.state?.from
   const handleAvatarImage=(e)=>{
     const file=e.target.files[0]
     if(file){
@@ -61,7 +64,7 @@ function Signup() {
       if(data.success){
         console.log("registrayion is Complete")
         setUser(data.data.user)
-        navigate('/youtube')
+        navigate(from,{replace:true})
       }else{
         setError(data.message)
         

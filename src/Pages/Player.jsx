@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { useRef } from 'react'
-import { useLocation, useParams } from 'react-router-dom'
+import { Link, Navigate, useLocation, useNavigate, useParams } from 'react-router-dom'
+import { useAuth } from '../Context/Authcontext'
 
 
 function Player() {
@@ -13,6 +14,10 @@ function Player() {
   })
   const [error, setError] = useState()
   const {videoId}=useParams()
+  const {user}=useAuth()
+
+  const navigate=useNavigate()
+  const location = useLocation();
   
  
   const [editCommentId, setEditCommentId] = useState("")
@@ -47,9 +52,6 @@ function Player() {
   const loadmoreRef = useRef(null)
 
   const [issubscribed,setIsSubscribed]=useState()
-
-
-
 
 
   const doComment = async function () {
@@ -103,8 +105,7 @@ function Player() {
         const response=await fetch(`https://antonpklive.online/v1/api/user/video/${videoId}`,
           {
             method:"GET",
-            credentials:"include",
-
+            credentials:"include"
           }
         )
         const data=await response.json()
@@ -113,7 +114,7 @@ function Player() {
           setError(data.message)
         }
         setVideo(data.data)
-        setIsSubscribed(data.isSubscribed)
+        setIsSubscribed(data.data.isSubscribed)
       } catch (error) {
         setError(error.message)
       }
@@ -470,11 +471,41 @@ function Player() {
     setOnTimeChange(time)
   }
 
-  const handleSubscribe=async function(){
-    const response=await fetch(``)
-  }
+  const handleSubscribe = async function () {
+    if (loading) {
+        return;
+    }
 
+    setLoading(true);
 
+    const method = issubscribed ? "DELETE" : "POST";
+    const action = issubscribed ? "unsubscribe" : "subscribe";
+
+    try {
+        const response = await fetch(
+            `https://antonpklive.online/v1/api/user/${action}/${video?.owner._id}`,
+            {
+                method,
+                credentials: "include",
+            }
+        );
+
+        const data = await response.json();
+
+        if (!data.success) {
+            setError(data.message);
+            return;
+        }
+
+        setIsSubscribed(!issubscribed);
+
+    } catch (error) {
+        setError(error.message);
+
+    } finally {
+        setLoading(false);
+    }
+};
 
 
   return (
@@ -629,13 +660,25 @@ function Player() {
         />
         <p>{video?.owner.username}</p>
         <p>{video?.subscriberCount}</p>
-        <button
-        onClick={handleSubscribe}
-        >
-          {
-            issubscribed?"Subscibed":"Subscribe"
-          }
-        </button>
+        {
+          user?._id?(
+            <button
+            onClick={handleSubscribe}
+            >
+              {issubscribed?"Subscribed":"Subscribe"}
+            </button>
+          ):(
+            <button
+            onClick={()=>navigate("/login",{
+              state:{
+                from:location.pathname + location.search
+              }
+            })}
+            >
+            Login To Subscribe
+            </button>
+          )
+        }
        </div>
 
         <div className="player-meta-row">
@@ -669,7 +712,8 @@ function Player() {
 
         {error && <div className="player-error">{error}</div>}
 
-        <div className="player-comment-input-wrap">
+        {
+          user?._id?(<div className="player-comment-input-wrap">
           <input
             className="player-comment-input"
             type="text"
@@ -688,7 +732,18 @@ function Player() {
               <polygon points="22 2 15 22 11 13 2 9 22 2" />
             </svg>
           </button>
-        </div>
+        </div>):(
+          <button
+          onClick={()=>navigate("/login",{
+            state:{
+              from:location.pathname +location.search
+            }
+          })}
+          >
+            Login To Comment
+          </button>
+        )
+        }
 
         <div className="player-comments-list">
           {showcomment.comments.map((c) => (

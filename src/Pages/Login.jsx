@@ -1,7 +1,7 @@
 import React from 'react'
 import { useAuth } from '../Context/Authcontext.jsx'
 import { useState } from 'react'
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 
 
 function Login() {
@@ -10,6 +10,11 @@ function Login() {
  const [email,setEmail]=useState("")
  const [password,setPassword]=useState("")
  const [error,setError]=useState("")
+ const location=useLocation()
+
+ const from=location.state?.from || "/youtube"
+
+ console.log(from)
 
  const loggedIn=async function(){
    setError("")
@@ -46,12 +51,8 @@ function Login() {
         setError("Email or Password is Incorrect")
         return
     }
-    navigate("/youtube");
-
     setUser(data.data.user)
-    
-
-
+    navigate(from,{replace:true});
    } catch (error) {
     console.log(error,"Error At Login Time")
    }
@@ -83,7 +84,11 @@ function Login() {
 
         <p className="auth-footer">
             Don't have an Account?
-            <Link to="/signup">
+            <Link to="/signup"
+            state={{
+              from
+            }}
+            >
                 Register
             </Link>
         </p>
