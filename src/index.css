@@ -259,29 +259,33 @@ a {
   margin-left: var(--sidebar-width);
 }
 
+
+
 /* ────────────────────────────────────────────────
    HOME — VIDEO GRID
 ──────────────────────────────────────────────── */
 .video-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 0;
+  row-gap: 32px;
+  column-gap: 16px;
 }
 
+/* ── Video Card ── */
 .video-card {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  border-radius: var(--radius-md);
-  overflow: hidden;
+  gap: 0;
+  border-radius: 0;
+  overflow: visible;
   cursor: pointer;
-  transition: var(--transition);
+  transition: none;
   color: var(--text-primary);
-}
-.video-card:hover {
-  transform: translateY(-3px);
+  text-decoration: none;
 }
 
+/* ── Thumbnail ── */
 .video-thumbnail-wrapper {
   position: relative;
   aspect-ratio: 16/9;
@@ -293,32 +297,69 @@ a {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.3s ease;
+  transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  display: block;
 }
 .video-card:hover .video-thumbnail-wrapper img {
-  transform: scale(1.04);
+  transform: scale(1.05);
 }
 
+/* Duration badge */
 .video-duration {
   position: absolute;
   bottom: 6px;
   right: 8px;
-  background: rgba(0,0,0,0.85);
+  background: rgba(0, 0, 0, 0.88);
   color: #fff;
-  font-size: 11px;
-  font-weight: 600;
-  padding: 2px 6px;
-  border-radius: 4px;
-  letter-spacing: 0.3px;
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 3px;
+  letter-spacing: 0.4px;
+  pointer-events: none;
 }
 
+/* Thumbnail hover scrim */
+.video-thumbnail-wrapper::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0);
+  transition: background 0.25s ease;
+  pointer-events: none;
+}
+.video-card:hover .video-thumbnail-wrapper::after {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+/* ── Info row (avatar + text) — YouTube style ── */
 .video-info {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 0 4px 8px;
+  flex-direction: row;
+  gap: 12px;
+  padding: 10px 2px 0;
+  align-items: flex-start;
 }
-.video-info h3 {
+
+.video-info-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  object-fit: cover;
+  flex-shrink: 0;
+  margin-top: 2px;
+  background: var(--bg-card);
+}
+
+.video-info-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  flex: 1;
+}
+
+.video-info-text h3 {
   font-size: 14px;
   font-weight: 600;
   line-height: 1.4;
@@ -327,20 +368,98 @@ a {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-}
-.video-info p {
-  font-size: 13px;
-  color: var(--text-secondary);
+  word-break: break-word;
+  margin-bottom: 2px;
 }
 
+.video-channel-name {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 0.15s;
+}
+.video-card:hover .video-channel-name {
+  color: var(--text-primary);
+}
+
+.video-meta-line {
+  font-size: 13px;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.video-meta-dot {
+  font-size: 10px;
+  opacity: 0.6;
+}
+
+/* ── Skeleton / Loading shimmer ── */
+@keyframes shimmer {
+  0%   { background-position: -600px 0; }
+  100% { background-position: 600px 0; }
+}
+.video-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.video-skeleton-thumb {
+  width: 100%;
+  aspect-ratio: 16/9;
+  border-radius: var(--radius-md);
+  background: linear-gradient(90deg, var(--bg-card) 25%, var(--bg-hover) 50%, var(--bg-card) 75%);
+  background-size: 600px 100%;
+  animation: shimmer 1.4s infinite;
+}
+.video-skeleton-info {
+  display: flex;
+  gap: 12px;
+  padding: 10px 2px 0;
+}
+.video-skeleton-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+  background: linear-gradient(90deg, var(--bg-card) 25%, var(--bg-hover) 50%, var(--bg-card) 75%);
+  background-size: 600px 100%;
+  animation: shimmer 1.4s infinite;
+}
+.video-skeleton-lines {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 4px;
+}
+.video-skeleton-line {
+  height: 12px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, var(--bg-card) 25%, var(--bg-hover) 50%, var(--bg-card) 75%);
+  background-size: 600px 100%;
+  animation: shimmer 1.4s infinite;
+}
+.video-skeleton-line:nth-child(1) { width: 90%; }
+.video-skeleton-line:nth-child(2) { width: 65%; }
+.video-skeleton-line:nth-child(3) { width: 50%; }
+
+/* ── Error Banner ── */
 .home-error {
-  background: rgba(255,0,0,0.1);
-  border: 1px solid rgba(255,0,0,0.3);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 0, 0, 0.08);
+  border: 1px solid rgba(255, 0, 0, 0.25);
   color: #ff6b6b;
-  padding: 12px 16px;
-  border-radius: var(--radius-sm);
+  padding: 13px 18px;
+  border-radius: var(--radius-md);
   font-size: 14px;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
+  font-weight: 500;
 }
 
 /* ────────────────────────────────────────────────
@@ -1256,4 +1375,141 @@ a {
 .spin {
   animation: spin 0.8s linear infinite;
   color: var(--text-muted);
+}
+
+/* ────────────────────────────────────────────────
+   RESPONSIVE — TABLET
+──────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .video-grid {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    column-gap: 12px;
+    row-gap: 28px;
+  }
+
+  .sidebar {
+    width: 72px;
+  }
+  .sidebar .sidebar-link span,
+  .sidebar .sidebar-section-title {
+    display: none;
+  }
+  .sidebar-link {
+    justify-content: center;
+    padding: 12px;
+  }
+
+  --sidebar-width: 72px;
+
+  .layout-main--with-sidebar {
+    margin-left: 72px;
+  }
+}
+
+/* ────────────────────────────────────────────────
+   RESPONSIVE — MOBILE
+──────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  /* Navbar: tighten, hide user name text */
+  .navbar {
+    padding: 0 10px;
+    gap: 8px;
+  }
+  .navbar-brand img {
+    width: 120px;
+  }
+  .navbar-search {
+    max-width: unset;
+    flex: 1;
+  }
+  .navbar-user p {
+    display: none;
+  }
+  .navbar-user img {
+    width: 32px;
+    height: 32px;
+  }
+
+  /* Sidebar: hidden off-screen by default on mobile */
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    width: var(--sidebar-width);
+    z-index: 200;
+    box-shadow: 4px 0 24px rgba(0,0,0,0.6);
+  }
+  /* When open (sidebar-open class toggled via JS or layout state) */
+  .sidebar.sidebar--open {
+    transform: translateX(0);
+  }
+
+  /* Layout: no left margin on mobile, full width */
+  .layout-main {
+    padding: 16px 12px 32px;
+  }
+  .layout-main--with-sidebar {
+    margin-left: 0 !important;
+  }
+
+  /* Video grid: 2 columns on tablets/large phones */
+  .video-grid {
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: 10px;
+    row-gap: 24px;
+  }
+
+  /* Slightly smaller info text */
+  .video-info-text h3 {
+    font-size: 13px;
+  }
+  .video-channel-name,
+  .video-meta-line {
+    font-size: 12px;
+  }
+  .video-info-avatar {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+/* ────────────────────────────────────────────────
+   RESPONSIVE — SMALL PHONES
+──────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  /* Navbar: hide search on very small screens, show icon only */
+  .navbar-search input {
+    font-size: 13px;
+    padding: 0 10px;
+  }
+  .navbar-search button {
+    padding: 0 12px;
+    font-size: 13px;
+  }
+
+  /* Single column on small phones */
+  .video-grid {
+    grid-template-columns: 1fr;
+    row-gap: 20px;
+  }
+
+  /* Bigger thumbnails look great on single-column */
+  .video-thumbnail-wrapper {
+    border-radius: var(--radius-sm);
+  }
+
+  /* Player page full-width */
+  .player-page {
+    padding-bottom: 40px;
+  }
+  .player-meta {
+    padding: 14px 14px;
+  }
+  .player-title {
+    font-size: 16px;
+  }
+
+  /* Auth pages on mobile */
+  .auth-card {
+    padding: 28px 20px;
+  }
 }
