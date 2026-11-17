@@ -14,8 +14,6 @@ function Login() {
 
  const from=location.state?.from || "/youtube"
 
- console.log(from)
-
  const loggedIn=async function(){
    setError("")
    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

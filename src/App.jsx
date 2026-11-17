@@ -6,6 +6,8 @@ import Signup from "./Pages/Signup";
 import Layout from "./Layout/Layout";
 import Search from "./Pages/Search";
 import Player from "./Pages/Player";
+import Upload from "./Pages/Upload";
+import CreateTweet from "./Pages/CreateTweet";
 
 function App() {
   return (
@@ -23,6 +25,9 @@ function App() {
       <Route path="/tweet/search" element={<Search />} />
 
       <Route path="/watch/:videoId" element={<Player />} />
+
+      <Route path="/youtube/upload" element={<Upload />} />
+      <Route path="/tweet/create" element={<CreateTweet />} />
       
       </Route>
     
